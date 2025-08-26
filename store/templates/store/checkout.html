@@ -67,16 +67,36 @@
 	</div>
 
 
-	<script type="text/javascript">
-		var form = document.getElementById('form')
+	<script>
+		var total = '{{order.get_cart_total|floatformat|2}}'
 
-		form.addEventListener('submit', function (e){
-			e.preventDefault()
-			console.log('Form submitted...')
-			document.getElementById('form-button').classList.add('hidden')
-			document.getElementById('payment-info').classList.remove('hidden')
+		document.addEventListener('DOMContentLoaded', function () {
+		  var form        = document.getElementById('form');
+		  var formBtn     = document.getElementById('form-button');
+		  var paymentInfo = document.getElementById('payment-info');
+		  var userInfo    = document.getElementById('user-info');
 
-			})
+		  // If logged in, hide user-info AND disable its required inputs so HTML5 validation doesn't block submit
+		  try {
+			if (typeof user !== 'undefined' && user !== 'AnonymousUser') {
+			  userInfo.classList.add('hidden');
+			  userInfo.querySelectorAll('input').forEach(function (inp) {
+				inp.required = false;   // remove required constraint
+				inp.disabled = true;    // exclude from form validation/submit entirely
+			  });
+			}
+		  } catch (e) {
+			console.warn('user var not found:', e);
+		  }
 
+		  // Submit -> hide Continue, show payment box
+		  form.addEventListener('submit', function (e) {
+			e.preventDefault();
+			console.log('Form submitted…');
+			formBtn.classList.add('hidden');
+			paymentInfo.classList.remove('hidden');
+		  });
+		});
 	</script>
+
 {% endblock content %}
